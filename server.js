@@ -2,8 +2,10 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const MongoClient = require('mongodb').MongoClient
-var _ = require('lodash')
 const uuidv4 = require('uuid/v4')
+const { ObjectId } = require('mongodb')
+const cors = require('cors')
+const basicAuth = require('express-basic-auth')
 
 app.use(
   bodyParser.urlencoded({
@@ -25,41 +27,103 @@ MongoClient.connect(
   },
 )
 
+const handleLogin = res => {
+  return queryResponse => {
+    if (queryResponse) {
+      res.status(200).send(queryResponse)
+    } else {
+      res.status(401).send('UNAUTHORIZED')
+    }
+  }
+}
+
+app.post('/login', cors(), (req, res) => {
+  db.collection(USERS_DOCUMENT)
+    .findOne({ name: req.body.name, pass: req.body.pass })
+    .then(handleLogin(res))
+    .catch(err => console.error(err))
+})
+
+const unauthorizedResponse = req =>
+  req.auth
+    ? 'Credentials ' + req.auth.user + ' : ' + req.auth.password + ' rejected'
+    : 'No credentials provided'
+
+app.use(
+  basicAuth({
+    authorizer: myAuthorizer,
+    unauthorizedResponse: unauthorizedResponse,
+    authorizeAsync: true,
+  }),
+)
+
+function myAuthorizer(username, password, callback) {
+  // ar trebui hashuita parola
+  return db
+    .collection(USERS_DOCUMENT)
+    .find({ name: username, pass: password })
+    .toArray()
+    .then(elements => callback(null, !!elements.length))
+}
+
+const USERS_DOCUMENT = 'Users'
+const STORIES_DOCUMENT = 'Stories'
 //USERS
 
-app.get('/getUsers', (req, res) => {
-  db.collection('Users')
+app.get('/users', cors(), (req, res) => {
+  db.collection(USERS_DOCUMENT)
     .find({})
-    .toArray((err, items) => {
-      if (err) {
-        console.log(err)
-      } else {
-        res.send(JSON.stringify(items))
-      }
-    })
+    .toArray()
+    .then(items => res.send(items))
+    .catch(err => console.error(err))
 })
 
-app.post('/createUser', (req, res) => {
-  db.collection('Users').insertOne(req.body, (err, result) => {
-    if (err) return console.log(err)
-    console.log('Create new user and saved to database')
-    res.redirect('/')
-  })
+app.post('/users', (req, res) => {
+  db.collection(USERS_DOCUMENT)
+    .insertOne(req.body)
+    .then(result => res.send(result.ops[0]))
+    .catch(err => console.error(err))
 })
 
-app.delete('/deleteUser/:id', (req, res) => {
+app.delete('/users/:id', (req, res) => {
   const id = req.params.id.toString()
-  db.collection('Users').remove({ "_id": id }, function(err, result) {
-    res.send(result === 1 ? { msg: 'Deleted' } : { msg: 'error: ' + err })
-  })
+  db.collection(USERS_DOCUMENT)
+    .deleteOne({ _id: ObjectId(id) })
+    .then(queryResponse => console.log(queryResponse.result))
+    .then(queryResponse => res.send('Deleted'))
+    .catch(err => console.error(err))
 })
 
 //STORIES
+app.get('/stories', cors(), (req, res) => {
+  db.collection(STORIES_DOCUMENT)
+    .find({})
+    .toArray()
+    .then(items => res.send(items))
+    .catch(err => console.error(err))
+})
 
-app.post('/createStory', (req, res) => {
-  db.collection('Stories').insertOne(req.body, (err, result) => {
-    if (err) return console.log(err)
-    console.log('Create new story and saved to database')
-    res.redirect('/')
-  })
+app.get('/stories/:storyId', cors(), (req, res) => {
+  const storyId = req.params.storyId.toString()
+  db.collection(STORIES_DOCUMENT)
+    .findOne(ObjectId(storyId))
+    .then(element => res.send(element))
+    .catch(err => console.error(err))
+})
+
+app.post('/stories', (req, res) => {
+  db.collection(STORIES_DOCUMENT)
+    .insertOne(req.body)
+    .then(result => res.send(result.ops[0]))
+    .catch(err => console.error(err))
+})
+
+app.put('/stories/:storyId', (req, res) => {
+  const storyId = req.params.storyId.toString()
+  var query = { _id: ObjectId(storyId) }
+  const diffStuff = { returnOriginal: false }
+  db.collection(STORIES_DOCUMENT)
+    .findOneAndUpdate(query, req.body, diffStuff)
+    .then(updatedDocument => res.send(updatedDocument))
+    .catch(err => console.error(err))
 })
