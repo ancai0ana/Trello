@@ -49,13 +49,21 @@ const unauthorizedResponse = req =>
     ? 'Credentials ' + req.auth.user + ' : ' + req.auth.password + ' rejected'
     : 'No credentials provided'
 
+// app.use(
+//   basicAuth({
+//     authorizer: myAuthorizer,
+//     unauthorizedResponse: unauthorizedResponse,
+//     authorizeAsync: true,
+//   }),
+// )
+
 app.use(
-  basicAuth({
-    authorizer: myAuthorizer,
-    unauthorizedResponse: unauthorizedResponse,
-    authorizeAsync: true,
+  bodyParser.urlencoded({
+    extended: true,
   }),
 )
+
+app.use(bodyParser.json())
 
 function myAuthorizer(username, password, callback) {
   // ar trebui hashuita parola
@@ -123,7 +131,7 @@ app.put('/stories/:storyId', (req, res) => {
   var query = { _id: ObjectId(storyId) }
   const diffStuff = { returnOriginal: false }
   db.collection(STORIES_DOCUMENT)
-    .findOneAndUpdate(query, req.body, diffStuff)
-    .then(updatedDocument => res.send(updatedDocument))
+    .findOneAndUpdate(query, { $set: req.body }, diffStuff)
+    .then(updatedDocument => res.send(updatedDocument.value))
     .catch(err => console.error(err))
 })
