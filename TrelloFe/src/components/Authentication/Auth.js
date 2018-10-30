@@ -98,8 +98,9 @@ const InputTitle = styled.input`
     margin-top:1%
     font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
     font-size:1em;
-    margin-left:0.5em
+    margin-left:0.5em;
 `;
+
 const InputButton = styled.input`
   background: #472f6b;
   color: white;

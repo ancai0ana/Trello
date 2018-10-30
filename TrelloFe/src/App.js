@@ -1,21 +1,20 @@
-import React, { Component } from "react";
-import "./App.css";
+import React, { Component } from 'react'
+import './App.css'
 import {
   BrowserRouter as Router,
   Route,
-  Link,
   Redirect,
-  withRouter
-} from "react-router-dom";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import MainPage from "./components/MainPage";
-import AuthPage from "./components/Authentication/AuthPage";
-library.add(faSearch);
+} from 'react-router-dom'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
+import MainPage from './components/MainPage'
+import AuthPage from './components/Authentication/AuthPage'
+library.add(faSearch)
+library.add(faTimes)
 
 class App extends Component {
   render() {
-    const loggedIn = false;
+    const loggedIn = true
     return (
       <Router>
         <div className="App">
@@ -29,8 +28,8 @@ class App extends Component {
           <Route path="/MainPage" component={MainPage} />
         </div>
       </Router>
-    );
+    )
   }
 }
 
-export default App;
+export default App
