@@ -44,13 +44,13 @@ const MainPage = ({
         ) : (
           stories
             .filter(story => story.label.toLowerCase().includes(searchValue))
-            .map((story, index) => (
+            .map((story, index) => console.log(story)||(
               <Story
                 key={index}
                 id={story._id}
                 title={story.title}
                 label={story.label}
-                assigned={story.label}
+                assigned={story.assigned}
                 description={story.description}
                 toggleOpenDetailModal={toggleOpenDetailModal(story._id)}
                 openDetailModal={openDetailModal}

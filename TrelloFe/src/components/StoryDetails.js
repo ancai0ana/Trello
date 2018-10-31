@@ -9,9 +9,11 @@ import {
   withProps,
   withStateHandlers,
 } from 'recompose'
+import Selector from './Selector'
 
 const StoryDetails = ({
   handleClose,
+  onChangeLabelAssigned,
   title,
   label,
   assigned,
@@ -22,6 +24,7 @@ const StoryDetails = ({
   newStory,
   id,
 }) => {
+  const labelName = ['To Do', 'In progress', 'CR', 'QA', 'Done']
   return (
     <Container>
       <Content>
@@ -37,12 +40,13 @@ const StoryDetails = ({
           </div>
         </Label>
 
-        <Label>
+        {/* <Label>
           <LabelTitle>
             <div>Label:</div>
           </LabelTitle>
           <Input type="text" name="label" value={label} onChange={onChange} />
-        </Label>
+        </Label> */}
+        <Selector name="label" value={label} onChange={onChange} labelObj={labelName}/>
 
         <Label>
           <LabelTitle>
@@ -117,7 +121,7 @@ const enhance = compose(
         })
       },
       onEditStory: (state, props) => event => {
-        fetch('stories/'+props.id, {
+        fetch('stories/' + props.id, {
           method: 'PUT',
           headers: {
             Accept: 'application/json',

@@ -135,3 +135,45 @@ app.put('/stories/:storyId', (req, res) => {
     .then(updatedDocument => res.send(updatedDocument.value))
     .catch(err => console.error(err))
 })
+
+app.delete('/stories/:storyId', (req, res) => {
+  const storyId = req.params.storyId.toString()
+  db.collection(STORIES_DOCUMENT)
+    .deleteOne({ _id: ObjectId(storyId) })
+    .then(queryResponse => console.log(queryResponse.result))
+    .then(queryResponse => res.send('Deleted'))
+    .catch(err => console.error(err))
+})
+
+// COMMENTS
+app.post('/stories/:storyId/comments', (req, res) => {
+  const storyId = req.params.storyId.toString()
+  const query = { _id: ObjectId(storyId) }
+  const comment = req.body;
+  comment._id = uuidv4();
+  const addCommentToStory = { $push: { comments: req.body } }
+  const diffStuff = { returnOriginal: false }
+  db.collection(STORIES_DOCUMENT)
+    .findOneAndUpdate(query, addCommentToStory, diffStuff)
+    .then(updatedDocument => res.send(updatedDocument.value))
+    .catch(err => console.error(err))
+})
+
+app.put('/stories/:storyId/comments', (req, res) => {
+  const storyId = req.params.storyId.toString()
+  var query = { _id: ObjectId(storyId) }
+  const diffStuff = { returnOriginal: false }
+  db.collection(STORIES_DOCUMENT)
+    .findOneAndUpdate(query, { $set: req.body }, diffStuff)
+    .then(updatedDocument => res.send(updatedDocument.value))
+    .catch(err => console.error(err))
+})
+
+app.delete('/stories/:storyId/comments', (req, res) => {
+  const storyId = req.params.storyId.toString()
+  db.collection(STORIES_DOCUMENT)
+    .deleteOne({ _id: ObjectId(storyId) })
+    .then(queryResponse => console.log(queryResponse.result))
+    .then(queryResponse => res.send('Deleted'))
+    .catch(err => console.error(err))
+})
