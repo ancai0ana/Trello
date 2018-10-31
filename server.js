@@ -149,31 +149,49 @@ app.delete('/stories/:storyId', (req, res) => {
 app.post('/stories/:storyId/comments', (req, res) => {
   const storyId = req.params.storyId.toString()
   const query = { _id: ObjectId(storyId) }
-  const comment = req.body;
-  comment._id = uuidv4();
+  const comment = req.body
+  comment._id = uuidv4()
   const addCommentToStory = { $push: { comments: req.body } }
   const diffStuff = { returnOriginal: false }
   db.collection(STORIES_DOCUMENT)
     .findOneAndUpdate(query, addCommentToStory, diffStuff)
-    .then(updatedDocument => res.send(updatedDocument.value))
+    .then(updatedDocument => updatedDocument.value.comments)
+    .then(comments =>
+      comments.filter(dbComment => dbComment._id === comment._id),
+    )
+    .then(createdComment => res.send(createdComment[0]))
     .catch(err => console.error(err))
 })
 
-app.put('/stories/:storyId/comments', (req, res) => {
+app.put('/stories/:storyId/comments/:commentId', (req, res) => {
   const storyId = req.params.storyId.toString()
-  var query = { _id: ObjectId(storyId) }
+  const commentId = req.params.commentId.toString()
+  var query = { _id: ObjectId(storyId), 'comments._id': commentId }
+  const editCommentOfStory = {
+    $set: {
+      'comments.$.text': req.body.text,
+      'comments.$.writtenBy': req.body.writtenBy,
+    },
+  }
   const diffStuff = { returnOriginal: false }
   db.collection(STORIES_DOCUMENT)
-    .findOneAndUpdate(query, { $set: req.body }, diffStuff)
-    .then(updatedDocument => res.send(updatedDocument.value))
+    .findOneAndUpdate(query, editCommentOfStory, diffStuff)
+    .then(updatedDocument => updatedDocument.value.comments)
+    .then(comments => comments.filter(dbComment => dbComment._id === commentId))
+    .then(updatedComment => res.send(updatedComment[0]))
     .catch(err => console.error(err))
 })
 
-app.delete('/stories/:storyId/comments', (req, res) => {
+app.delete('/stories/:storyId/comments/:commentId', (req, res) => {
   const storyId = req.params.storyId.toString()
+  const commentId = req.params.commentId.toString()
+  var query = { _id: ObjectId(storyId) }
+  const removeComment = {
+    $pull: { comments: { _id: commentId } },
+  }
+  const diffStuff = { returnOriginal: false }
   db.collection(STORIES_DOCUMENT)
-    .deleteOne({ _id: ObjectId(storyId) })
-    .then(queryResponse => console.log(queryResponse.result))
-    .then(queryResponse => res.send('Deleted'))
+    .findOneAndUpdate(query, removeComment, diffStuff)
+    .then(updatedDocument => res.send({}))
     .catch(err => console.error(err))
 })
