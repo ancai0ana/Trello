@@ -1,27 +1,22 @@
 import React from 'react'
 import styled from 'styled-components'
-import StoryDetails from './StoryDetails'
 import {
   compose,
-  withState,
-  withHandlers,
-  withStateHandlers,
 } from 'recompose'
 
 const Story = ({
-  title,
+  id,
   label,
+  title,
   assigned,
   description,
+  openDetailModal,
   handleClickStory,
   toggleOpenDetailModal,
-  openDetailModal,
-  id
 }) => {
   let capitalizeFirstLetter = string => {
     return string.charAt(0).toUpperCase() + string.slice(1)
   }
-
   return (
     <Container>
       <Button onClick={toggleOpenDetailModal}>
@@ -42,7 +37,7 @@ export default enhance(Story)
 
 const Container = styled.div`
   background: white;
-  width: 15em;
+  width: 13em;
   height: 14em;
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 5px;

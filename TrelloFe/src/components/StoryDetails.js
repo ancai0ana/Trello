@@ -10,21 +10,24 @@ import {
   withStateHandlers,
 } from 'recompose'
 import Selector from './Selector'
+import AddComment from './AddComment'
 
 const StoryDetails = ({
-  handleClose,
-  onChangeLabelAssigned,
+  id,
   title,
   label,
   assigned,
-  description,
   onChange,
-  onCreateStory,
-  onEditStory,
   newStory,
-  id,
+  userName,
+  labelName,
+  handleClose,
+  description,
+  onEditStory,
+  onDeleteStory,
+  onCreateStory,
+  onChangeLabelAssigned,
 }) => {
-  const labelName = ['To Do', 'In progress', 'CR', 'QA', 'Done']
   return (
     <Container>
       <Content>
@@ -40,25 +43,18 @@ const StoryDetails = ({
           </div>
         </Label>
 
-        {/* <Label>
-          <LabelTitle>
-            <div>Label:</div>
-          </LabelTitle>
-          <Input type="text" name="label" value={label} onChange={onChange} />
-        </Label> */}
-        <Selector name="label" value={label} onChange={onChange} labelObj={labelName}/>
-
-        <Label>
-          <LabelTitle>
-            <div>Assigned to:</div>
-          </LabelTitle>
-          <Input
-            type="text"
-            name="assigned"
-            value={assigned}
-            onChange={onChange}
-          />
-        </Label>
+        <Selector
+          name="label"
+          value={label}
+          onChange={onChange}
+          labelObj={labelName}
+        />
+        <Selector
+          name="assigned"
+          value={assigned}
+          onChange={onChange}
+          labelObj={userName}
+        />
 
         <Label>
           <LabelTitle>
@@ -72,6 +68,13 @@ const StoryDetails = ({
           />
         </Label>
 
+        <Label>
+          <LabelTitle>
+            <div>Add comments:</div>
+          </LabelTitle>
+          <AddComment />
+        </Label>
+
         {newStory ? (
           <SubmitButton
             type="submit"
@@ -79,11 +82,18 @@ const StoryDetails = ({
             onClick={onCreateStory}
           />
         ) : (
-          <SubmitButton
-            type="submit"
-            value="Edit story"
-            onClick={onEditStory}
-          />
+          <div>
+            <SubmitButton
+              type="submit"
+              value="Edit story"
+              onClick={onEditStory}
+            />
+            <SubmitButton
+              type="submit"
+              value="Delete story"
+              onClick={onDeleteStory}
+            />
+          </div>
         )}
       </Content>
     </Container>
@@ -94,8 +104,8 @@ const enhance = compose(
   withStateHandlers(
     ({
       title = '',
-      label = '',
-      assigned = '',
+      label = 'To Do',
+      assigned = 'Nobody',
       description = '',
       comments = [],
     }) => ({
@@ -128,6 +138,16 @@ const enhance = compose(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(state),
+        })
+      },
+      onDeleteStory: (state, props) => event => {
+        props.handleClose()
+        fetch('stories/' + props.id, {
+          method: 'DELETE',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }
         })
       },
     },

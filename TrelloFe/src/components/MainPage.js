@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import styled from 'styled-components'
 import { lifecycle, compose, withState, withHandlers } from 'recompose'
 import Header from './Header'
-
 import StoryDetails from './StoryDetails'
+var _ = require('lodash')
 
 const MainPage = ({
   searchValue,
@@ -17,12 +17,26 @@ const MainPage = ({
   toggleOpenDetailModal,
   openDetailModal,
   idSelectStory,
+  users,
 }) => {
+  const userName = ['Nobody']
+  _.chain(users)
+    .map(item => userName.push(item.name))
+    .toArray()
+    .value()
+
+  const labelName = ['To Do', 'In progress', 'CR', 'QA', 'Done']
+
   return (
     <Container>
       <Header />
       {openModal ? (
-        <StoryDetails handleClose={toggleModal} newStory={true} />
+        <StoryDetails
+          handleClose={toggleModal}
+          newStory={true}
+          userName={userName}
+          labelName={labelName}
+        />
       ) : (
         ''
       )}
@@ -37,27 +51,31 @@ const MainPage = ({
         />
         <AddStoryButton type="submit" value="Add story" onClick={toggleModal} />
       </FirstContainer>
-
       <ContainerCards>
-        {stories.length === 0 ? (
-          <div>There are no stories .</div>
-        ) : (
-          stories
-            .filter(story => story.label.toLowerCase().includes(searchValue))
-            .map((story, index) => console.log(story)||(
-              <Story
-                key={index}
-                id={story._id}
-                title={story.title}
-                label={story.label}
-                assigned={story.assigned}
-                description={story.description}
-                toggleOpenDetailModal={toggleOpenDetailModal(story._id)}
-                openDetailModal={openDetailModal}
-              />
-            ))
-        )}
+        {labelName.map((label, index) => (
+          <div key={index}>
+            <LabelTitle>
+              {label}
+            </LabelTitle>
+            {stories
+              .filter(story => story.label===(label))
+              .filter(story => story.label.toLowerCase().includes(searchValue))
+              .map((story, index) => (
+                <Story
+                  key={index}
+                  id={story._id}
+                  title={story.title}
+                  label={story.label}
+                  assigned={story.assigned}
+                  description={story.description}
+                  toggleOpenDetailModal={toggleOpenDetailModal(story._id)}
+                  openDetailModal={openDetailModal}
+                />
+              ))}
+          </div>
+        ))}
       </ContainerCards>
+
       {openDetailModal
         ? stories
             .filter(story => story._id === idSelectStory)
@@ -67,7 +85,9 @@ const MainPage = ({
                 id={story._id}
                 title={story.title}
                 label={story.label}
-                assigned={story.label}
+                userName={userName}
+                labelName={labelName}
+                assigned={story.assigned}
                 description={story.description}
                 handleClose={toggleOpenDetailModal(story._id)}
               />
@@ -105,6 +125,17 @@ const enhance = compose(
       })
         .then(response => response.json())
         .then(stories => this.setState({ stories }))
+        .catch(err => console.log(err))
+
+      fetch('/users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(users => this.setState({ users }))
         .catch(err => console.log(err))
     },
     componentDidUpdate(prevProps, prevState) {
@@ -170,8 +201,14 @@ const AddStoryButton = styled.input`
   }
 `
 const ContainerCards = styled.div`
-  margin: 3em;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+margin:0em 2em;
+  display: grid;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+`
+const LabelTitle = styled.div`
+  margin: 1.2em 0em;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  color: #4db7b3;
+  font-size: 1.4em;
+  font-weight: bold;
 `
