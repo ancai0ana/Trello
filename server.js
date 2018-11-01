@@ -97,8 +97,7 @@ app.delete('/users/:id', (req, res) => {
   const id = req.params.id.toString()
   db.collection(USERS_DOCUMENT)
     .deleteOne({ _id: ObjectId(id) })
-    .then(queryResponse => console.log(queryResponse.result))
-    .then(queryResponse => res.send('Deleted'))
+    .then(() => res.send('Deleted'))
     .catch(err => console.error(err))
 })
 
@@ -140,8 +139,7 @@ app.delete('/stories/:storyId', (req, res) => {
   const storyId = req.params.storyId.toString()
   db.collection(STORIES_DOCUMENT)
     .deleteOne({ _id: ObjectId(storyId) })
-    .then(queryResponse => console.log(queryResponse.result))
-    .then(queryResponse => res.send('Deleted'))
+    .then(() => res.send('Deleted'))
     .catch(err => console.error(err))
 })
 

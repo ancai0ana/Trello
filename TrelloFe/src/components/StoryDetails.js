@@ -20,6 +20,7 @@ const StoryDetails = ({
   onChange,
   userName,
   newStory,
+  comments,
   assigned,
   labelName,
   onEditStory,
@@ -31,7 +32,7 @@ const StoryDetails = ({
   onChangeComment,
   onChangeLabelAssigned,
 }) => {
-  console.log({ comment })
+  console.log({ comments })
   return (
     <Container>
       <Content>
@@ -91,9 +92,7 @@ const StoryDetails = ({
           <div>
             <AddCommentBox>
               <Label>
-                <LabelTitle>
-                  <div>Add comments:</div>
-                </LabelTitle>
+                <LabelTitle>Add comment:</LabelTitle>
               </Label>
               <AddComment
                 comment={comment}
@@ -102,9 +101,25 @@ const StoryDetails = ({
               />
             </AddCommentBox>
 
+            <AddCommentBox>
+              <Label>
+                <LabelTitle>Comments :</LabelTitle>
+              </Label>
+              {comments
+                ? comments.map((comment, index) => (
+                    <Label>
+                      <LabelTitleComment key={index}>
+                        {comment.name}
+                      </LabelTitleComment>
+                      <InputComment value={comment.text} />
+                    </Label>
+                  ))
+                : ''}
+            </AddCommentBox>
+
             <SubmitButton
               type="submit"
-              value="Add story"
+              value="Add comment"
               onClick={onAddComment}
             />
             <SubmitButton
@@ -127,6 +142,7 @@ const StoryDetails = ({
 const enhance = compose(
   withStateHandlers(
     ({
+      id = '',
       title = '',
       label = 'To Do',
       assigned = 'Nobody',
@@ -134,6 +150,7 @@ const enhance = compose(
       comments = [],
       comment = { name: 'Nobody', text: '' },
     }) => ({
+      id: id,
       title: title,
       label: label,
       assigned: assigned,
@@ -151,7 +168,7 @@ const enhance = compose(
         return { comment: newComment }
       },
       onCreateStory: (state, props) => event => {
-        const { comment, ...rest } = state
+        const { comment, comments, id, ...rest } = state
         props.handleClose()
         fetch('stories/', {
           method: 'POST',
@@ -163,14 +180,14 @@ const enhance = compose(
         })
       },
       onEditStory: (state, props) => event => {
-        const { comment, ...rest } = state
+        const { comment, comments, id, ...rest } = state
         fetch('stories/' + props.id, {
           method: 'PUT',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(state),
+          body: JSON.stringify(rest),
         })
         console.log(rest)
       },
@@ -184,18 +201,20 @@ const enhance = compose(
           },
         })
       },
+      onAddCommentToState: (state, props) => event => {
+        let updateComments = state.comments
+        updateComments.push(state.comment)
+        return { comments: updateComments }
+      },
       onAddComment: (state, props) => event => {
-        console.log('a adaugat')
-        console.log(state.comment)
-        console.log(state.comments)
-        // props.handleClose()
-        // fetch('stories/' + props.id, {
-        //   method: 'DELETE',
-        //   headers: {
-        //     Accept: 'application/json',
-        //     'Content-Type': 'application/json',
-        //   },
-        // })
+        fetch('stories/' + props.id + '/comments', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(state.comment),
+        })
       },
     },
   ),
@@ -223,7 +242,7 @@ const Content = styled.div`
   border-radius: 8px;
 `
 const AddCommentBox = styled.div`
-  margin: 7% auto;
+  margin: 0% auto;
 `
 const Icon = styled.div`
   display: flex;
@@ -238,6 +257,14 @@ const LabelTitle = styled.div`
   margin: 1% 0%;
   color: #472f6b;
   font-size: 1.2em;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+`
+const LabelTitleComment = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  margin: 1% 0%;
+  color: #472f6b;
+  font-size: 1em;
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
 `
 
@@ -274,6 +301,23 @@ const InputDescription = styled.textarea`
   padding-left: 60px;
   padding: 0.5em;
   height: 5em;
+`
+const InputComment = styled.textarea`
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 0.9em;
+  outline: none;
+  margin-left: 1%;
+  width: 100%;
+  ::placeholder {
+    padding-left: 1%;
+  }
+  border-style: solid;
+  border-color: #472f6b;
+  border-radius: 8px;
+  border-width: 1px;
+  padding-left: 60px;
+  padding: 0.5em 0.5em;
+  height: 2.1em;
 `
 
 const SubmitButton = styled.input`

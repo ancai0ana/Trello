@@ -45,10 +45,10 @@ const MainPage = ({
         ''
       )}
       <FirstContainer>
-        <div>
+        <ColumnFirstContainer>
           <FontAwesomeIcon icon="search" color="#818284" />
-        </div>
-        <div>
+        </ColumnFirstContainer>
+        <ColumnFirstContainer>
           <InputSearch
             type="text"
             name="search"
@@ -56,25 +56,24 @@ const MainPage = ({
             placeholder="Filter search"
             onChange={onChange}
           />
-        </div>
-        <div>
+        </ColumnFirstContainer>
+        <ColumnFirstContainer>
           <Selector
             value={labelSelector}
             title="labelSelector"
             onChange={onChangelabelSelector}
             labelObj={fieldStory}
           />
-        </div>
-        <div />
-        <div>
+        </ColumnFirstContainer>
+        <ColumnFirstContainer />
+        <ColumnFirstContainer>
           <AddStoryButton
             type="submit"
             value="Add story"
             onClick={toggleModal}
           />
-        </div>
+        </ColumnFirstContainer>
       </FirstContainer>
-      {/* {console.log('aici', labelSelector)} */}
       <ContainerCards>
         {labelName.map((label, index) => (
           <div key={index}>
@@ -129,6 +128,7 @@ const MainPage = ({
                 userName={userName}
                 labelName={labelName}
                 assigned={story.assigned}
+                comments={story.comments}
                 description={story.description}
                 handleClose={toggleOpenDetailModal(story._id)}
               />
@@ -208,9 +208,14 @@ const Container = styled.div``
 const FirstContainer = styled.div`
   padding-top: 1em;
   display: grid;
-  grid-template-columns: 1% 19% 10% 45% 25%;
+  grid-template-columns: 1% 29% 10% 45% 15%;
   margin-top: 1em;
   margin-left: 3em;
+`
+const ColumnFirstContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 const InputSearch = styled.input`
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
