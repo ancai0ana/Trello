@@ -16,18 +16,22 @@ const StoryDetails = ({
   id,
   title,
   label,
-  assigned,
+  comment,
   onChange,
-  newStory,
   userName,
+  newStory,
+  assigned,
   labelName,
+  onEditStory,
   handleClose,
   description,
-  onEditStory,
+  onAddComment,
   onDeleteStory,
   onCreateStory,
+  onChangeComment,
   onChangeLabelAssigned,
 }) => {
+  console.log({ comment })
   return (
     <Container>
       <Content>
@@ -39,18 +43,26 @@ const StoryDetails = ({
             <div>Title:</div>
           </LabelTitle>
           <div>
-            <Input type="text" name="title" value={title} onChange={onChange} />
+            <Input
+              type="text"
+              title="title"
+              name="title"
+              value={title}
+              onChange={onChange}
+            />
           </div>
         </Label>
 
         <Selector
           name="label"
           value={label}
+          title="label"
           onChange={onChange}
           labelObj={labelName}
         />
         <Selector
           name="assigned"
+          title="assigned"
           value={assigned}
           onChange={onChange}
           labelObj={userName}
@@ -62,17 +74,11 @@ const StoryDetails = ({
           </LabelTitle>
           <InputDescription
             type="text"
+            title="description"
             name="description"
             value={description}
             onChange={onChange}
           />
-        </Label>
-
-        <Label>
-          <LabelTitle>
-            <div>Add comments:</div>
-          </LabelTitle>
-          <AddComment />
         </Label>
 
         {newStory ? (
@@ -83,6 +89,24 @@ const StoryDetails = ({
           />
         ) : (
           <div>
+            <AddCommentBox>
+              <Label>
+                <LabelTitle>
+                  <div>Add comments:</div>
+                </LabelTitle>
+              </Label>
+              <AddComment
+                comment={comment}
+                userName={userName}
+                onChangeComment={onChangeComment}
+              />
+            </AddCommentBox>
+
+            <SubmitButton
+              type="submit"
+              value="Add story"
+              onClick={onAddComment}
+            />
             <SubmitButton
               type="submit"
               value="Edit story"
@@ -108,18 +132,26 @@ const enhance = compose(
       assigned = 'Nobody',
       description = '',
       comments = [],
+      comment = { name: 'Nobody', text: '' },
     }) => ({
       title: title,
       label: label,
       assigned: assigned,
       description: description,
       comments: comments,
+      comment: comment,
     }),
     {
       onChange: (state, props) => event => ({
-        [event.target.name]: event.target.value,
+        [event.target.title]: event.target.value,
       }),
+      onChangeComment: (state, props) => event => {
+        let newComment = state.comment
+        newComment[event.target.title] = event.target.value
+        return { comment: newComment }
+      },
       onCreateStory: (state, props) => event => {
+        const { comment, ...rest } = state
         props.handleClose()
         fetch('stories/', {
           method: 'POST',
@@ -127,10 +159,11 @@ const enhance = compose(
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(state),
+          body: JSON.stringify(rest),
         })
       },
       onEditStory: (state, props) => event => {
+        const { comment, ...rest } = state
         fetch('stories/' + props.id, {
           method: 'PUT',
           headers: {
@@ -139,6 +172,7 @@ const enhance = compose(
           },
           body: JSON.stringify(state),
         })
+        console.log(rest)
       },
       onDeleteStory: (state, props) => event => {
         props.handleClose()
@@ -147,8 +181,21 @@ const enhance = compose(
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-          }
+          },
         })
+      },
+      onAddComment: (state, props) => event => {
+        console.log('a adaugat')
+        console.log(state.comment)
+        console.log(state.comments)
+        // props.handleClose()
+        // fetch('stories/' + props.id, {
+        //   method: 'DELETE',
+        //   headers: {
+        //     Accept: 'application/json',
+        //     'Content-Type': 'application/json',
+        //   },
+        // })
       },
     },
   ),
@@ -169,11 +216,14 @@ const Container = styled.div`
 `
 const Content = styled.div`
   background-color: #fefefe;
-  margin: 10% auto;
+  margin: 5% auto;
   padding: 20px;
   border: 1px solid #888;
   width: 40%;
   border-radius: 8px;
+`
+const AddCommentBox = styled.div`
+  margin: 7% auto;
 `
 const Icon = styled.div`
   display: flex;
