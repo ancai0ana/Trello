@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { lifecycle, compose, withState, withHandlers } from 'recompose'
 import Header from './Header'
 import StoryDetails from './StoryDetails'
+import Selector from './Selector'
 var _ = require('lodash')
 
 const MainPage = ({
@@ -18,6 +19,8 @@ const MainPage = ({
   openDetailModal,
   idSelectStory,
   users,
+  labelSelector,
+  onChangelabelSelector,
 }) => {
   const userName = ['Nobody']
   _.chain(users)
@@ -26,6 +29,7 @@ const MainPage = ({
     .value()
 
   const labelName = ['To Do', 'In progress', 'CR', 'QA', 'Done']
+  const fieldStory = ['Title', 'Label', 'Assigned', 'Description']
 
   return (
     <Container>
@@ -41,25 +45,62 @@ const MainPage = ({
         ''
       )}
       <FirstContainer>
-        <FontAwesomeIcon icon="search" color="#818284" />
-        <InputSearch
-          type="text"
-          name="search"
-          value={searchValue}
-          placeholder="Search label"
-          onChange={onChange}
-        />
-        <AddStoryButton type="submit" value="Add story" onClick={toggleModal} />
+        <div>
+          <FontAwesomeIcon icon="search" color="#818284" />
+        </div>
+        <div>
+          <InputSearch
+            type="text"
+            name="search"
+            value={searchValue}
+            placeholder="Filter search"
+            onChange={onChange}
+          />
+        </div>
+        <div>
+          <Selector
+            value={labelSelector}
+            title="labelSelector"
+            onChange={onChangelabelSelector}
+            labelObj={fieldStory}
+          />
+        </div>
+        <div />
+        <div>
+          <AddStoryButton
+            type="submit"
+            value="Add story"
+            onClick={toggleModal}
+          />
+        </div>
       </FirstContainer>
+      {/* {console.log('aici', labelSelector)} */}
       <ContainerCards>
         {labelName.map((label, index) => (
           <div key={index}>
-            <LabelTitle>
-              {label}
-            </LabelTitle>
+            <LabelTitle>{label}</LabelTitle>
             {stories
-              .filter(story => story.label===(label))
-              .filter(story => story.label.toLowerCase().includes(searchValue))
+              .filter(story => story.label === label)
+              .filter(story => {
+                let field = ''
+                switch (labelSelector) {
+                  case 'Title':
+                    field = story.title
+                    break
+                  case 'Label':
+                    field = story.label
+                    break
+                  case 'Assigned':
+                    field = story.assigned
+                    break
+                  case 'Description':
+                    field = story.description
+                    break
+                  default:
+                    break
+                }
+                return field.toLowerCase().includes(searchValue)
+              })
               .map((story, index) => (
                 <Story
                   key={index}
@@ -102,7 +143,11 @@ const enhance = compose(
   withState('openDetailModal', 'updateOpenDetailModal', false),
   withState('openModal', 'updateOpenModal', false),
   withState('idSelectStory', 'updateIdSelectStory', ''),
+  withState('labelSelector', 'updateLabelSelector', 'Title'),
   withHandlers({
+    onChangelabelSelector: props => event => {
+      props.updateLabelSelector(event.target.value)
+    },
     onChange: props => event => {
       props.updateSearchValue(event.target.value)
     },
@@ -162,8 +207,8 @@ export default enhance(MainPage)
 const Container = styled.div``
 const FirstContainer = styled.div`
   padding-top: 1em;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1% 19% 10% 45% 25%;
   margin-top: 1em;
   margin-left: 3em;
 `
@@ -201,7 +246,7 @@ const AddStoryButton = styled.input`
   }
 `
 const ContainerCards = styled.div`
-margin:0em 2em;
+  margin: 0em 2em;
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;
 `

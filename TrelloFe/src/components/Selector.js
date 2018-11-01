@@ -9,7 +9,7 @@ const Selector = ({ onChange,title, name, value, labelObj }) => {
   return (
     <Label>
       <LabelTitle>
-        <div>{capitalizeFirstLetter(name)} :</div>
+        <div>{name ? capitalizeFirstLetter(name)+ ':': ''}</div>
       </LabelTitle>
       <SelectorContainer>
         <SelectorSelect name={name} title={title} value={value} onChange={onChange}>
