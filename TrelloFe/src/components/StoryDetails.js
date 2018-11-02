@@ -1,14 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  lifecycle,
-  compose,
-  withState,
-  withHandlers,
-  withProps,
-  withStateHandlers,
-} from 'recompose'
+import { compose, withStateHandlers } from 'recompose'
 import Selector from './Selector'
 import AddComment from './AddComment'
 
@@ -117,7 +110,10 @@ const StoryDetails = ({
                       <LabelTitleComment key={index}>
                         {comment.name}
                       </LabelTitleComment>
-                      <InputComment value={comment.text} onChange={onChangeComment}/>
+                      <InputComment
+                        value={comment.text}
+                        onChange={onChangeComment}
+                      />
                       <Icon>
                         {/* <FontAwesomeIcon
                           icon="pencil-alt"
@@ -127,7 +123,7 @@ const StoryDetails = ({
                         <FontAwesomeIcon
                           icon="trash"
                           color="#818284"
-                          onClick={()=>onDeleteComment(comment._id)}
+                          onClick={() => onDeleteComment(comment._id)}
                         />
                       </Icon>
                     </Label>
@@ -135,7 +131,6 @@ const StoryDetails = ({
                 : ''}
             </AddCommentBox>
 
-          
             <SubmitButton
               type="submit"
               value="Edit story"
@@ -232,7 +227,7 @@ const enhance = compose(
         })
       },
       onDeleteComment: (state, props) => id => {
-        fetch('stories/' + props.id+ '/comments/'+id, {
+        fetch('stories/' + props.id + '/comments/' + id, {
           method: 'DELETE',
           headers: {
             Accept: 'application/json',

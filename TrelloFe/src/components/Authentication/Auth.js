@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { lifecycle, compose, withState, withHandlers } from "recompose";
+import {  compose, withState, withHandlers } from "recompose";
 
 const Auth = ({
   title,

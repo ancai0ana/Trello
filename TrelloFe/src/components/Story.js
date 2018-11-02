@@ -1,8 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-  compose,
-} from 'recompose'
+import { compose } from 'recompose'
 
 const Story = ({
   id,
@@ -30,8 +28,7 @@ const Story = ({
   )
 }
 
-const enhance = compose(
-)
+const enhance = compose()
 
 export default enhance(Story)
 

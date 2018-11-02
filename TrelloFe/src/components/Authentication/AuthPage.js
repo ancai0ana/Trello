@@ -1,6 +1,5 @@
 import React from 'react'
 import Auth from './Auth'
-import styled from "styled-components";
 
 const AuthPage=()=>{
     return(
