@@ -9,18 +9,18 @@ import Selector from './Selector'
 var _ = require('lodash')
 
 const MainPage = ({
-  searchValue,
-  onChange,
+  users,
   onClick,
-  stories = [],
+  onChange,
   openModal,
   toggleModal,
-  toggleOpenDetailModal,
-  openDetailModal,
-  idSelectStory,
-  users,
+  searchValue,
+  stories = [],
   labelSelector,
+  idSelectStory,
+  openDetailModal,
   onChangelabelSelector,
+  toggleOpenDetailModal,
 }) => {
   const userName = ['Nobody']
   _.chain(users)

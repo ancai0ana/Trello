@@ -84,52 +84,60 @@ const StoryDetails = ({
           />
         ) : (
           <div>
-            <AddCommentBox>
-              <Label>
-                <LabelTitle>Add comment:</LabelTitle>
-              </Label>
-              <AddComment
-                comment={comment}
-                userName={userName}
-                onChangeComment={onChangeComment}
+            <RowElement>
+              <AddCommentBox>
+                <Label>
+                  <LabelTitle>Add comment:</LabelTitle>
+                </Label>
+                <AddComment
+                  comment={comment}
+                  userName={userName}
+                  onChangeComment={onChangeComment}
+                />
+              </AddCommentBox>
+              <SubmitButton
+                type="submit"
+                value="Add comment"
+                onClick={onAddComment}
               />
-            </AddCommentBox>
-            <SubmitButton
-              type="submit"
-              value="Add comment"
-              onClick={onAddComment}
-            />
-
-            <AddCommentBox>
-              <Label>
-                <LabelTitle>Comments :</LabelTitle>
-              </Label>
-              {comments
-                ? comments.map((comment, index) => (
-                    <Label key={index}>
-                      <LabelTitleComment key={index}>
-                        {comment.name}
-                      </LabelTitleComment>
-                      <InputComment
-                        value={comment.text}
-                        onChange={onChangeComment}
-                      />
-                      <Icon>
-                        {/* <FontAwesomeIcon
+            </RowElement>
+            
+            <RowElement>
+              <AddCommentBox>
+                {comments.length ? (
+                  <div>
+                    <Label>
+                      <LabelTitle>Comments :</LabelTitle>
+                    </Label>
+                    {comments.map((comment, index) => (
+                      <Label key={index}>
+                        <LabelTitleComment key={index}>
+                          {comment.name}
+                        </LabelTitleComment>
+                        <InputComment
+                          value={comment.text}
+                          onChange={onChangeComment}
+                        />
+                        <Icon>
+                          {/* <FontAwesomeIcon
                           icon="pencil-alt"
                           color="#818284"
                           onClick={()=>onDeleteComment(comment._id)}
                         /> */}
-                        <FontAwesomeIcon
-                          icon="trash"
-                          color="#818284"
-                          onClick={() => onDeleteComment(comment._id)}
-                        />
-                      </Icon>
-                    </Label>
-                  ))
-                : ''}
-            </AddCommentBox>
+                          <FontAwesomeIcon
+                            icon="trash"
+                            color="#818284"
+                            onClick={() => onDeleteComment(comment._id)}
+                          />
+                        </Icon>
+                      </Label>
+                    ))}
+                  </div>
+                ) : (
+                  ''
+                )}
+              </AddCommentBox>
+            </RowElement>
 
             <SubmitButton
               type="submit"
@@ -259,6 +267,9 @@ const Content = styled.div`
   border: 1px solid #888;
   width: 40%;
   border-radius: 8px;
+`
+const RowElement = styled.div`
+  margin: 3em 0em;
 `
 const AddCommentBox = styled.div`
   margin: 0% auto;
