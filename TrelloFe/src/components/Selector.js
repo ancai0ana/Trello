@@ -2,17 +2,22 @@ import React from 'react'
 import { compose } from 'recompose'
 import styled from 'styled-components'
 
-const Selector = ({ onChange,title, name, value, labelObj }) => {
+const Selector = ({ onChange, title, name, value, labelObj }) => {
   let capitalizeFirstLetter = word => {
     return word.charAt(0).toUpperCase() + word.slice(1)
   }
   return (
     <Label>
       <LabelTitle>
-        <div>{name ? capitalizeFirstLetter(name)+ ':': ''}</div>
+        <div>{name ? capitalizeFirstLetter(name) + ':' : ''}</div>
       </LabelTitle>
       <SelectorContainer>
-        <SelectorSelect name={name} title={title} value={value} onChange={onChange}>
+        <SelectorSelect
+          name={name}
+          title={title}
+          value={value}
+          onChange={onChange}
+        >
           {labelObj.map((item, index) => (
             <option value={item.toString()} key={index}>
               {item}

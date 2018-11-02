@@ -24,6 +24,7 @@ const StoryDetails = ({
   onCreateStory,
   onChangeComment,
   onDeleteComment,
+  onChangeToEditComment,
   onChangeLabelAssigned,
 }) => {
   return (
@@ -101,7 +102,7 @@ const StoryDetails = ({
                 onClick={onAddComment}
               />
             </RowElement>
-            
+
             <RowElement>
               <AddCommentBox>
                 {comments.length ? (
@@ -115,15 +116,12 @@ const StoryDetails = ({
                           {comment.name}
                         </LabelTitleComment>
                         <InputComment
+                          title={'text'}
                           value={comment.text}
-                          onChange={onChangeComment}
+                          id={comment._id}
+                          onChange={onChangeToEditComment}
                         />
                         <Icon>
-                          {/* <FontAwesomeIcon
-                          icon="pencil-alt"
-                          color="#818284"
-                          onClick={()=>onDeleteComment(comment._id)}
-                        /> */}
                           <FontAwesomeIcon
                             icon="trash"
                             color="#818284"
@@ -167,13 +165,13 @@ const enhance = compose(
       comments = [],
       comment = { name: 'Nobody', text: '' },
     }) => ({
-      id: id,
-      title: title,
-      label: label,
-      assigned: assigned,
-      description: description,
-      comments: comments,
-      comment: comment,
+      id,
+      title,
+      label,
+      comment,
+      comments,
+      assigned,
+      description,
     }),
     {
       onChange: (state, props) => event => ({
@@ -207,7 +205,6 @@ const enhance = compose(
           },
           body: JSON.stringify(rest),
         })
-        console.log(rest)
       },
       onDeleteStory: (state, props) => event => {
         props.handleClose()
@@ -243,6 +240,21 @@ const enhance = compose(
           },
         })
       },
+      onChangeToEditComment: (state, props) => event => {
+        const id = event.target.id
+        return {
+          ...state,
+          comments: state.comments.map(
+            comment =>
+              comment._id === id
+                ? {
+                    ...comment,
+                    text: event.target.value,
+                  }
+                : comment,
+          ),
+        }
+      },
     },
   ),
 )
@@ -269,7 +281,7 @@ const Content = styled.div`
   border-radius: 8px;
 `
 const RowElement = styled.div`
-  margin: 3em 0em;
+  margin: 2em 0em;
 `
 const AddCommentBox = styled.div`
   margin: 0% auto;

@@ -77,7 +77,9 @@ const MainPage = ({
       <ContainerCards>
         {labelName.map((label, index) => (
           <div key={index}>
-            <LabelTitle>{label}</LabelTitle>
+            <LabelTitle>
+              <div>{label}</div>
+            </LabelTitle>
             {stories
               .filter(story => story.label === label)
               .filter(story => {
@@ -261,4 +263,6 @@ const LabelTitle = styled.div`
   color: #4db7b3;
   font-size: 1.4em;
   font-weight: bold;
+  display: flex;
+  justify-content: center;
 `
