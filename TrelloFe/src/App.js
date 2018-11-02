@@ -6,11 +6,13 @@ import {
   Redirect,
 } from 'react-router-dom'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 import MainPage from './components/MainPage'
 import AuthPage from './components/Authentication/AuthPage'
 library.add(faSearch)
 library.add(faTimes)
+library.add(faTrash)
+library.add(faPencilAlt)
 
 class App extends Component {
   render() {

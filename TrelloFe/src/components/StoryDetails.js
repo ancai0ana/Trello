@@ -30,15 +30,16 @@ const StoryDetails = ({
   onDeleteStory,
   onCreateStory,
   onChangeComment,
+  onDeleteComment,
   onChangeLabelAssigned,
 }) => {
-  console.log({ comments })
   return (
     <Container>
       <Content>
         <Icon>
           <FontAwesomeIcon icon="times" color="#818284" onClick={handleClose} />
         </Icon>
+
         <Label>
           <LabelTitle>
             <div>Title:</div>
@@ -100,6 +101,11 @@ const StoryDetails = ({
                 onChangeComment={onChangeComment}
               />
             </AddCommentBox>
+            <SubmitButton
+              type="submit"
+              value="Add comment"
+              onClick={onAddComment}
+            />
 
             <AddCommentBox>
               <Label>
@@ -107,21 +113,29 @@ const StoryDetails = ({
               </Label>
               {comments
                 ? comments.map((comment, index) => (
-                    <Label>
+                    <Label key={index}>
                       <LabelTitleComment key={index}>
                         {comment.name}
                       </LabelTitleComment>
-                      <InputComment value={comment.text} />
+                      <InputComment value={comment.text} onChange={onChangeComment}/>
+                      <Icon>
+                        {/* <FontAwesomeIcon
+                          icon="pencil-alt"
+                          color="#818284"
+                          onClick={()=>onDeleteComment(comment._id)}
+                        /> */}
+                        <FontAwesomeIcon
+                          icon="trash"
+                          color="#818284"
+                          onClick={()=>onDeleteComment(comment._id)}
+                        />
+                      </Icon>
                     </Label>
                   ))
                 : ''}
             </AddCommentBox>
 
-            <SubmitButton
-              type="submit"
-              value="Add comment"
-              onClick={onAddComment}
-            />
+          
             <SubmitButton
               type="submit"
               value="Edit story"
@@ -181,6 +195,7 @@ const enhance = compose(
       },
       onEditStory: (state, props) => event => {
         const { comment, comments, id, ...rest } = state
+        props.handleClose()
         fetch('stories/' + props.id, {
           method: 'PUT',
           headers: {
@@ -214,6 +229,15 @@ const enhance = compose(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(state.comment),
+        })
+      },
+      onDeleteComment: (state, props) => id => {
+        fetch('stories/' + props.id+ '/comments/'+id, {
+          method: 'DELETE',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
         })
       },
     },
@@ -284,7 +308,6 @@ const Input = styled.input`
   padding-left: 60px;
   padding: 0.5em;
 `
-
 const InputDescription = styled.textarea`
   font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
   font-size: 0.9em;
